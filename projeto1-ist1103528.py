@@ -1,6 +1,10 @@
-# Fazer assinaturas para funcoes (O que recebe e devolve e tipos, o que faz), fazer raise ValueError para erros
-
+"""
+ Fazer assinaturas para funcoes (O que recebe e devolve e tipos, o que faz), fazer raise ValueError para erros
+"""
 # PART 1
+
+""""string --> string """
+
 
 def corrigir_palavra(word):
     length = len(word)
@@ -20,6 +24,9 @@ def corrigir_palavra(word):
     return word
 
 
+""""string, string --> boolean """
+
+
 def eh_anagrama(word1, word2):
     sorted_word1 = sorted(word1.lower())
     sorted_word2 = sorted(word2.lower())
@@ -28,9 +35,12 @@ def eh_anagrama(word1, word2):
     return False
 
 
-# MAIN
-# Do validation checks
+""""string --> string """
+
+
 def corrigir_doc(doc):
+    if not isinstance(doc, str):
+        raise ValueError("corrigir_doc: argumento invalido")
     # Check doc is not an empty string, check it is made up of at least one character
     if not (doc != "" and all(chr.isalpha() or chr.isspace() for chr in doc) and doc.isspace() != True):
         raise ValueError("corrigir_doc: argumento invalido")
@@ -42,19 +52,25 @@ def corrigir_doc(doc):
 
 # Compares each word of the doc (the letter outbreaks have been corrected at this point)
 # with eachother and checks if they are anagrams
+""""string -->string """
+
+
 def remover_anagramas(doc):
     length = len(doc)
     count1 = 0
     while count1 < length - 1:
         count2 = count1 + 1
         while count2 < length:
-            if eh_anagrama(doc[count1], doc[count2]) and doc[count1] != doc[count2]:
+            if eh_anagrama(doc[count1], doc[count2]) and doc[count1].lower() != doc[count2].lower():
                 del doc[count2]
                 length -= 1
             else:
                 count2 += 1
         count1 += 1
     return doc
+
+
+""""string --> string """
 
 
 def corrigir_surtos(incorrect_doc):
@@ -68,7 +84,8 @@ def corrigir_surtos(incorrect_doc):
             # Check for two consecutive spaces
             elif incorrect_doc[upper_index + 1] == " ":
                 raise ValueError("corrigir_doc: argumento invalido")
-            correct_word = corrigir_palavra(incorrect_doc[lower_index:upper_index])
+            correct_word = corrigir_palavra(
+                incorrect_doc[lower_index:upper_index])
             # CHECK IF THIS IS NEEDED
             # if correct_word == "":
             #     raise ValueError ("corrigir_doc: argumento invalido")
@@ -79,6 +96,8 @@ def corrigir_surtos(incorrect_doc):
 
 
 # PART 2
+"""" """
+
 
 def obter_posicao(character, integer):
     if character == "C":
@@ -96,13 +115,21 @@ def obter_posicao(character, integer):
     return integer
 
 
+"""" """
+
+
 def obter_digito(characters, integer):
     for element in characters:
         integer = obter_posicao(element, integer)
     return integer
 
 
+"""" """
+
+
 def obter_pin(tup):
+    if not isinstance(tup, tuple):
+        raise ValueError("obter_pin: argumento invalido")
     pin_length = len(tup)
     if pin_length < 4 or pin_length > 10:
         raise ValueError("obter_pin: argumento invalido")
@@ -110,27 +137,34 @@ def obter_pin(tup):
     position = 5
     for count in range(0, pin_length):
         seq_moves = tup[count]
-        if type(seq_moves) != str or seq_moves.isalpha() == False:
+        if (not isinstance(seq_moves, str)) or seq_moves.isalpha() is False:
             raise ValueError("obter_pin: argumento invalido")
-
+        for move in seq_moves:
+            if move not in ("B", "C", "D", "E"):
+                raise ValueError("obter_pin: argumento invalido")
         position = obter_digito(seq_moves, position)
         pin += position,
     return pin
 
 
 # PART 3
+"""" """
+
 
 def eh_entrada(entry):
-    if type(entry) != tuple:
+    if not isinstance(entry, tuple):
         return False
     if len(entry) != 3:
         return False
     # Check using sub-functions whether elements of entry are valid
     if check_cipher(entry[0]) and \
             check_checksum(entry[1]) and \
-            check_security_nums(entry[2]) == True:
+            check_security_nums(entry[2]) is True:
         return True
     return False
+
+
+"""" """
 
 
 def check_cipher(cipher):
@@ -150,7 +184,12 @@ def check_cipher(cipher):
     return True
 
 
+"""" """
+
+
 def check_checksum(checksum):
+    if not isinstance(checksum, str):
+        return False
     if len(checksum) != 7:
         return False
     if not (checksum[0] == "[" or checksum[6] == "]"):
@@ -161,16 +200,24 @@ def check_checksum(checksum):
     return True
 
 
+"""" """
+
+
 def check_security_nums(security_nums):
-    if type(security_nums) != tuple:
+    if not isinstance(security_nums, tuple):
         return False
     length = len(security_nums)
-    if length == 0:
+    if length < 2:
         return False
     for element in security_nums:
-        if type(element) != int:
+        if not isinstance(element, int):
+            return False
+        if element < 0:
             return False
     return True
+
+
+"""" """
 
 
 def validar_cifra(cipher, checksum):
@@ -181,7 +228,7 @@ def validar_cifra(cipher, checksum):
             letters[character] = occurances(cipher, character)
     ordered_letters = ""
     # While there are still letters
-    for count in range(5):
+    for _ in range(5):
         max_occurances = -1
         for key, value in letters.items():
             if value > max_occurances:
@@ -198,6 +245,9 @@ def validar_cifra(cipher, checksum):
     return False
 
 
+"""" """
+
+
 def occurances(cipher, letter):
     count = 0
     for character in cipher:
@@ -206,19 +256,26 @@ def occurances(cipher, letter):
     return count
 
 
+"""" """
+
+
 def filtrar_bdb(unfiltered_list):
     filtered_list = []
+    if not isinstance(unfiltered_list, list):
+        raise ValueError("filtrar_bdb: argumento invalido")
     if len(unfiltered_list) == 0:
         raise ValueError("filtrar_bdb: argumento invalido")
     for entry in unfiltered_list:
-        if eh_entrada(entry) == False:
+        if eh_entrada(entry) is False:
             raise ValueError("filtrar_bdb: argumento invalido")
-        if validar_cifra(entry[0], entry[1]) == False:
+        if validar_cifra(entry[0], entry[1]) is False:
             filtered_list.append(entry)
     return filtered_list
 
 
 # PART 4
+"""" """
+
 
 def obter_num_seguranca(numbers):
     min_diff = 10 ** 10
@@ -231,6 +288,9 @@ def obter_num_seguranca(numbers):
     # if min_diff == 10**10:
     #    raise ValueError
     return min_diff
+
+
+"""" """
 
 
 def decifrar_texto(cipher, security_num):
@@ -251,47 +311,59 @@ def decifrar_texto(cipher, security_num):
     return deciphered_word
 
 
+"""" """
+
+
 def decifrar_bdb(encrypted_list):
-    if type(encrypted_list) != list or len(encrypted_list) == 0:
+    if (not isinstance(encrypted_list, list)) or len(encrypted_list) == 0:
         raise ValueError("decifrar_bdb: argumento invalido")
     decrypted_list = []
     for entry in encrypted_list:
         if not eh_entrada(entry):
             raise ValueError("decifrar_bdb: argumento invalido")
-        decrypted_list.append(decifrar_texto(entry[0], obter_num_seguranca(entry[2])))
+        decrypted_list.append(decifrar_texto(
+            entry[0], obter_num_seguranca(entry[2])))
     return decrypted_list
 
 
 # PART 5
+"""" """
 
-# O valor que representa o m´aximo n´umero de vezes que aparece a letra ´e sempre
-# maior ou igual que o m´ınimo.
+
 def eh_utilizador(user_dict):
-    if type(user_dict) != dict:
+    if (not isinstance(user_dict, dict)) or len(user_dict) != 3:
         return False
     # Check if keys name, pass and rule exist in user_dict
     if not {"name", "pass", "rule"} <= set(user_dict):
+        return False
+    if (not isinstance(user_dict["name"], str)) or not isinstance(user_dict["pass"], str):
         return False
     if len(user_dict["name"]) == 0 or len(user_dict["pass"]) == 0:
         return False
     if not {"vals", "char"} <= set(user_dict["rule"]):
         return False
-    if type(user_dict["rule"]["vals"]) != tuple or len(user_dict["rule"]["vals"]) != 2:
+    if (not isinstance(user_dict["rule"]["vals"], tuple)) or len(user_dict["rule"]["vals"]) != 2:
         return False
-    if type(user_dict["rule"]["vals"][0]) != int or type(user_dict["rule"]["vals"][1]) != int:
+    if (not isinstance(user_dict["rule"]["vals"][0], int)) or not isinstance(user_dict["rule"]["vals"][1], int):
         return False
-    if len(user_dict["rule"]["char"]) != 1 or type(user_dict["rule"]["char"]) != str:
+    if user_dict["rule"]["vals"][0] < 1:
+        return False
+    if len(user_dict["rule"]["char"]) != 1 or not isinstance(user_dict["rule"]["char"], str):
+        return False
+    # Second value in tuple must always be >= the first value
+    if user_dict["rule"]["vals"][0] > user_dict["rule"]["vals"][1]:
         return False
     return True
 
 
+"""" """
+
+
 def eh_senha_valida(password, rule):
-    if rule["vals"][0] > rule["vals"][1]:  # Second value in tuple must always be >= the first value
-        return False
     count = 0
     prev_char = ""
     consecutive_chars = False
-    occurances = 0
+    occurance = 0
     for character in password:
         if character in ("a", "e", "i", "o", "u"):
             count += 1
@@ -299,17 +371,20 @@ def eh_senha_valida(password, rule):
             consecutive_chars = True
         prev_char = character
         if character == rule["char"]:
-            occurances += 1
-    if count < 3 or consecutive_chars == False:
+            occurance += 1
+    if count < 3 or consecutive_chars is False:
         return False
-    if occurances < rule["vals"][0] or occurances > rule["vals"][1]:
+    if occurance < rule["vals"][0] or occurance > rule["vals"][1]:
         return False
     return True
 
 
+"""" """
+
+
 def filtrar_senhas(unfiltered_list):
     filtered_list = []
-    if type(unfiltered_list) != list or len(unfiltered_list) == 0:
+    if (not isinstance(unfiltered_list, list)) or len(unfiltered_list) == 0:
         raise ValueError("filtrar_senhas: argumento invalido")
     for dictionary in unfiltered_list:
         if not eh_utilizador(dictionary):
@@ -317,4 +392,3 @@ def filtrar_senhas(unfiltered_list):
         if not eh_senha_valida(dictionary["pass"], dictionary["rule"]):
             filtered_list.append(dictionary["name"])
     return sorted(filtered_list)
-
